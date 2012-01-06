@@ -43,6 +43,14 @@ class Media extends CI_Controller {
         // only continue if the original file exists
         if (!file_exists($original))
             show_404($path);
+
+        // get mime type
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $mime = finfo_file($finfo, realpath($original));
+        
+        // only allow images
+        if(!stristr("image", $mime))
+            show_404($path);
         
         // get the requested width and height
         if (list($width, $height) = explode("x", $size)) {
@@ -122,10 +130,6 @@ class Media extends CI_Controller {
                 $this->image_lib->initialize($config);
                 $this->image_lib->crop();
             }
-            
-            // get mime type
-            $finfo = finfo_open(FILEINFO_MIME_TYPE);
-            $mime = finfo_file($finfo, realpath($path));
             
             // set headers for dynamic output
             header("Content-Disposition: filename={" . $path . "};");
