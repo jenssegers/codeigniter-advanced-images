@@ -49,7 +49,7 @@ class Media extends CI_Controller {
         $mime = finfo_file($finfo, realpath($original));
         
         // only allow images
-        if(!stristr("image", $mime))
+        if(!stristr($mime, "image"))
             show_404($path);
         
         // get the requested width and height
