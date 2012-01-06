@@ -9,10 +9,8 @@ Installation
  1. Download the files from github and place the in their corresponding folder.
  2. Make sure you are using the .htaccess mod_rewrite: http://codeigniter.com/wiki/mod_rewrite
  2. Rename the controller and the media folder to your liking. (must be the same name)
- 3. Add a custom route to your config/routes.php file. This will redirect all "non-existing-file" request to the media controller's resize method:
-
-	$route['media/(:any)'] = 'media/resize/$1';
-
+ 3. Add a custom route to your config/routes.php file. This will redirect all "non-existing-file" request to the media controller's resize method:  
+	`$route['media/(:any)'] = 'media/resize/$1';`
  4. Optional: autoload the image_helper by adding it to $autoload['helper'] array in your config/autoload.php file.
 
 Configuration
