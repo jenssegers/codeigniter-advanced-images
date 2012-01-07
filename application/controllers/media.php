@@ -1,6 +1,6 @@
 <?php
 /**
- * @name		CodeIgniter Images
+ * @name		CodeIgniter Advanced Images
  * @author		Jens Segers
  * @link		http://www.jenssegers.be
  * @license		MIT License Copyright (c) 2011 Jens Segers
