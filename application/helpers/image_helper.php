@@ -23,7 +23,16 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
- 
+
+/**
+ * Image
+ *
+ * Generates a modified image source to work with the advanced images controller
+ *
+ * @access	public
+ * @param	mixed
+ * @return	string
+ */
 if (!function_exists('image')) {
     function image($image_path, $preset) {
         $ci = &get_instance();

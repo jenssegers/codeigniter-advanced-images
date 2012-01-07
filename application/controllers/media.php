@@ -1,6 +1,6 @@
 <?php
 /**
- * @name		CodeIgniter Advanced Images
+ * @name		CodeIgniter Images
  * @author		Jens Segers
  * @link		http://www.jenssegers.be
  * @license		MIT License Copyright (c) 2011 Jens Segers
@@ -43,17 +43,20 @@ class Media extends CI_Controller {
         // only continue if the original file exists
         if (!file_exists($original))
             show_404($path);
-
+        
         // get mime type
         $finfo = finfo_open(FILEINFO_MIME_TYPE);
         $mime = finfo_file($finfo, realpath($original));
         
         // only allow images
-        if(!stristr($mime, "image"))
+        if (!stristr($mime, "image"))
             show_404($path);
         
         // get the requested width and height
-        if (list($width, $height) = explode("x", $size)) {
+        @list($width, $height) = explode("x", $size);
+        
+        // only continue with a valid width and height
+        if ($width >= 0 && $height >= 0) {
             // preserve requested size
             $new_width = $width;
             $new_height = $height;
@@ -70,76 +73,82 @@ class Media extends CI_Controller {
             // security check, to avoid users requesting random sizes
             $allowed = FALSE;
             foreach ($sizes as $s) {
-                if ($width . "x" . $height == $size)
+                if ($width . "x" . $height == $s)
                     $allowed = TRUE;
             }
             
-            // if the size is not allowed, show 404
-            if (!$allowed)
-                show_404($path);
-            
-             // auto-scale if 1 dimension is 0
-            if ($width == 0 || $height == 0) {
-                if ($width == 0)
-                    $new_width = ceil($height * $orig_width / $orig_height);
-                else
-                    $new_height = ceil($width * $orig_height / $orig_width);
-            } // making image bigger for cropping
-            else {
-                $new_width = ceil($height * $orig_width / $orig_height);
-                $new_height = ceil($width * $orig_height / $orig_width);
+            // preset allowed
+            if ($allowed) {
                 
-                $ratio = (($orig_height / $orig_width) - ($height / $width));
-                $master_dim = ($ratio < 0) ? 'width' : 'height';
-                
-                if (($width != $new_width) && ($height != $new_height)) {
-                    if ($master_dim == 'height')
-                        $new_width = $width;
+                if ($width == 0 || $height == 0) {
+                    // auto-scale if 1 dimension is 0
+                    if ($width == 0)
+                        $new_width = ceil($height * $orig_width / $orig_height);
                     else
-                        $new_height = $height;
+                        $new_height = ceil($width * $orig_height / $orig_width);
+                } else {
+                    // making image bigger for cropping
+                    $new_width = ceil($height * $orig_width / $orig_height);
+                    $new_height = ceil($width * $orig_height / $orig_width);
+                    
+                    $ratio = (($orig_height / $orig_width) - ($height / $width));
+                    $master_dim = ($ratio < 0) ? 'width' : 'height';
+                    
+                    if (($width != $new_width) && ($height != $new_height)) {
+                        if ($master_dim == 'height')
+                            $new_width = $width;
+                        else
+                            $new_height = $height;
+                    }
                 }
-            }
-            
-            // start resize
-            $config = array();
-            $config["source_image"] = $original;
-            $config["new_image"] = $path;
-            $config["width"] = $new_width;
-            $config["height"] = $new_height;
-            $config["maintain_ratio"] = FALSE;
-            
-            $this->load->library("image_lib");
-            $this->image_lib->initialize($config);
-            $this->image_lib->resize();
-            $this->image_lib->clear();
-            
-            // cropping needed?
-            if ($width != 0 && $height != 0) {
-                $x_axis = floor(($new_width - $width) / 2);
-                $y_axis = floor(($new_height - $height) / 2);
                 
-                // start cropping
+                // start resize
                 $config = array();
-                $config["x_axis"] = $x_axis;
-                $config["y_axis"] = $y_axis;
-                $config["width"] = $new_width - 2 * $x_axis;
-                $config["height"] = $new_height - 2 * $y_axis;
-                $config["source_image"] = $path;
+                $config["source_image"] = $original;
                 $config["new_image"] = $path;
+                $config["width"] = $new_width;
+                $config["height"] = $new_height;
+                $config["maintain_ratio"] = FALSE;
                 
+                $this->load->library("image_lib");
                 $this->image_lib->initialize($config);
-                $this->image_lib->crop();
+                $this->image_lib->resize();
+                $this->image_lib->clear();
+                
+                // cropping needed?
+                if ($width != 0 && $height != 0) {
+                    $x_axis = floor(($new_width - $width) / 2);
+                    $y_axis = floor(($new_height - $height) / 2);
+                    
+                    // start cropping
+                    $config = array();
+                    $config["x_axis"] = $x_axis;
+                    $config["y_axis"] = $y_axis;
+                    $config["width"] = $new_width - 2 * $x_axis;
+                    $config["height"] = $new_height - 2 * $y_axis;
+                    $config["source_image"] = $path;
+                    $config["new_image"] = $path;
+                    
+                    $this->image_lib->initialize($config);
+                    $this->image_lib->crop();
+                }
+            } else {
+                // preset not found, show original image
+                $path = $original;
             }
-            
-            // set headers for dynamic output
-            header("Content-Disposition: filename={" . $path . "};");
-			header("Content-Type: {$mime}");
-			header('Content-Transfer-Encoding: binary');
-			header('Last-Modified: ' . gmdate('D, d M Y H:i:s', time()) . ' GMT');
-			header("Expires: " . gmdate('D, d M Y H:i:s', time() + 5184000));
-
-			readfile($path);
-        } else
-            show_404($path);
+        
+        } else {
+            // invalid width and/or height, show original image
+            $path = $original;
+        }
+        
+        // set headers for dynamic output
+        header("Content-Disposition: filename={" . $path . "};");
+        header("Content-Type: {$mime}");
+        header('Content-Transfer-Encoding: binary');
+        header('Last-Modified: ' . gmdate('D, d M Y H:i:s', time()) . ' GMT');
+        header("Expires: " . gmdate('D, d M Y H:i:s', time() + 5184000));
+        
+        readfile($path);
     }
 }
