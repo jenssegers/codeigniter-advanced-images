@@ -47,6 +47,21 @@ In your config/images.php file you need to specify what preset sizes you will be
 	
 Each preset has a width and a height. If one of the dimensions are equal to 0, it will automatically calculate a matching width or height to maintain the original ratio. if you specify both dimensions it will automatically crop the resulting image so that it fits those dimensions.
 	
+Library
+-------
+
+The resize and crop logic is grouped in a library that extends CodeIgniter's 'image_lib' and adds a 'fit' function. You can use this library to resize and crop an image to fit the specified dimensions like this:
+
+	$config["source_image"] = '/path/to/image/mypic.jpg';
+	$config['new_image'] = '/path/to/new/image/newpic.jpg';
+	$config["width"] = 100;
+	$config["height"] = 100;
+					
+	$this->load->library('image_lib', $config);
+	$this->image_lib->fit();
+
+The function will return TRUE on sucess or FALSE on failure. Error messages can be read like the normal library with the display_errors() method.
+	
 Usage
 -----
 
