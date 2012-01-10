@@ -1,9 +1,9 @@
 <?php
 /**
- * @name		CodeIgniter Advanced Images
- * @author		Jens Segers
- * @link		http://www.jenssegers.be
- * @license		MIT License Copyright (c) 2011 Jens Segers
+ * @name        CodeIgniter Advanced Images
+ * @author        Jens Segers
+ * @link        http://www.jenssegers.be
+ * @license        MIT License Copyright (c) 2011 Jens Segers
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,47 +32,45 @@ class MY_Image_lib extends CI_Image_lib {
     var $user_width = 0;
     var $user_height = 0;
     
-    
     /**
      * Initialize image preferences
      *
-     * @access	public
-     * @param	array
-     * @return	bool
+     * @access    public
+     * @param     array
+     * @return    bool
      */
     function initialize($props = array()) {
         // save user specified dimensions before they are modified by the CI library
-        if (isset($props["width"]))
+        if (isset($props["width"])) {
             $this->user_width = $props["width"];
-        if (isset($props["height"]))
+        }
+        if (isset($props["height"])) {
             $this->user_height = $props["height"];
+        }
         
         return parent::initialize($props);
     }
     
-    
-	/**
-	 * Initialize image properties
-	 *
-	 * Resets values in case this class is used in a loop
-	 *
-	 * @access	public
-	 * @return	void
-	 */
-	function clear()
-	{
-		$this->user_width = 0;
-		$this->user_height = 0;
-		
-		return parent::clear();
-	}
-    
+    /**
+     * Initialize image properties
+     *
+     * Resets values in case this class is used in a loop
+     *
+     * @access    public
+     * @return    void
+     */
+    function clear() {
+        $this->user_width = 0;
+        $this->user_height = 0;
+        
+        return parent::clear();
+    }
     
     /**
      * Smart resize and crop function
      *
-     * @access	public
-     * @return	bool
+     * @access    public
+     * @return    bool
      */
     function fit() {
         // overwrite the dimensions with the original user specified dimensions
@@ -87,11 +85,12 @@ class MY_Image_lib extends CI_Image_lib {
         // ------------------------------------------------------------------------------------------
         if ($this->user_width == 0 || $this->user_height == 0) {
             // calculate missing dimension
-            if ($this->user_width == 0)
+            if ($this->user_width == 0) {
                 $this->width = ceil($this->user_height * $this->orig_width / $this->orig_height);
-            else
+            } else {
                 $this->height = ceil($this->user_width * $this->orig_height / $this->orig_width);
-                
+            }
+            
             // no cropping is needed, just resize
             return $this->resize();
         }
@@ -103,10 +102,11 @@ class MY_Image_lib extends CI_Image_lib {
         $this->height = ceil($this->user_width * $this->orig_height / $this->orig_width);
         
         if (($this->user_width != $this->width) && ($this->user_height != $this->height)) {
-            if ($this->master_dim == 'height')
+            if ($this->master_dim == 'height') {
                 $this->width = $this->user_width;
-            else
+            } else {
                 $this->height = $this->user_height;
+            }
         }
         
         // save dynamic output for last
@@ -122,8 +122,9 @@ class MY_Image_lib extends CI_Image_lib {
         }
         
         // resize stage
-        if (!$this->resize())
+        if (!$this->resize()) {
             return FALSE;
+        }
         
         // cropping options
         $this->orig_width = $this->width;
@@ -140,9 +141,10 @@ class MY_Image_lib extends CI_Image_lib {
         $this->dynamic_output = $dynamic_output;
         
         // cropping stage
-        if (!$this->crop())
+        if (!$this->crop()) {
             return FALSE;
-
+        }
+        
         // close (and remove) the temporary file
         if ($tempfile) {
             fclose($temp);

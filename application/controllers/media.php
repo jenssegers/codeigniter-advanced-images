@@ -37,8 +37,9 @@ class Media extends CI_Controller {
         $original = $pathinfo["dirname"] . "/" . str_replace("-" . $size, "", $pathinfo["basename"]);
         
         // original image not found, show 404
-        if (!file_exists($original))
+        if (!file_exists($original)) {
             show_404($original);
+        }
         
         @list($width, $height) = explode("x", $size);
         
@@ -66,16 +67,18 @@ class Media extends CI_Controller {
                 $config["height"] = $height;
                 $config["dynamic_output"] = FALSE; // always save as cache
                 
+
                 $this->load->library('image_lib', $config);
                 $this->image_lib->fit();
             }
         }
         
         // check if the resulting image exists, else show the original
-        if (file_exists($path))
+        if (file_exists($path)) {
             $output = $path;
-        else
+        } else {
             $output = $original;
+        }
         
         $info = getimagesize($output);
         
