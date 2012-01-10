@@ -64,24 +64,27 @@ class Media extends CI_Controller {
                 $config['new_image'] = $path;
                 $config["width"] = $width;
                 $config["height"] = $height;
-                $config["dynamic_output"] = TRUE;
+                $config["dynamic_output"] = FALSE; // always save as cache
                 
                 $this->load->library('image_lib', $config);
-                
-                if ($this->image_lib->fit())
-                    exit(); // we're done
+                $this->image_lib->fit();
             }
         }
         
-        // if we have reached this point the image was not send to the user
-        // so display the original image
+        // check if the resulting image exists, else show the original
+        if (file_exists($path))
+            $output = $path;
+        else
+            $output = $original;
         
-        $info = getimagesize($original);
-        header("Content-Disposition: filename={$original};");
+        $info = getimagesize($output);
+        
+        // output the image
+        header("Content-Disposition: filename={$output};");
         header("Content-Type: {$info["mime"]}");
         header('Content-Transfer-Encoding: binary');
         header('Last-Modified: ' . gmdate('D, d M Y H:i:s', time()) . ' GMT');
         
-        readfile($original);
+        readfile($output);
     }
 }

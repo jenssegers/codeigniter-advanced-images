@@ -79,36 +79,43 @@ class MY_Image_lib extends CI_Image_lib {
         $this->width = $this->user_width;
         $this->height = $this->user_height;
         
+        // we will calculat the sizes ourselves
+        $this->maintain_ratio = FALSE;
+        
+        // ------------------------------------------------------------------------------------------
+        // mode 1: auto-scale the image to fit 1 dimension
+        // ------------------------------------------------------------------------------------------
         if ($this->user_width == 0 || $this->user_height == 0) {
-            // auto-calculate other dimension
+            // calculate missing dimension
             if ($this->user_width == 0)
                 $this->width = ceil($this->user_height * $this->orig_width / $this->orig_height);
             else
                 $this->height = ceil($this->user_width * $this->orig_height / $this->orig_width);
-        } else {
-            // making image bigger for cropping
-            $this->width = ceil($this->user_height * $this->orig_width / $this->orig_height);
-            $this->height = ceil($this->user_width * $this->orig_height / $this->orig_width);
-            
-            if (($this->user_width != $this->width) && ($this->user_height != $this->height)) {
-                if ($this->master_dim == 'height')
-                    $this->width = $this->user_width;
-                else
-                    $this->height = $this->user_height;
-            }
+                
+            // no cropping is needed, just resize
+            return $this->resize();
         }
         
-        // we've calculated the sizes ourselves
-        $this->maintain_ratio = FALSE;
+        // ------------------------------------------------------------------------------------------
+        // mode 2: resize and crop the image to fit both dimensions
+        // ------------------------------------------------------------------------------------------
+        $this->width = ceil($this->user_height * $this->orig_width / $this->orig_height);
+        $this->height = ceil($this->user_width * $this->orig_height / $this->orig_width);
+        
+        if (($this->user_width != $this->width) && ($this->user_height != $this->height)) {
+            if ($this->master_dim == 'height')
+                $this->width = $this->user_width;
+            else
+                $this->height = $this->user_height;
+        }
         
         // save dynamic output for last
         $dynamic_output = $this->dynamic_output;
         $this->dynamic_output = FALSE;
         
-        // dynamic output without destination image is requested so we will have 
-        // to create a temporary file so we do not overwrite the original image
+        // if dynamic output is requested we will use a temporary file to work on
         $tempfile = FALSE;
-        if ($dynamic_output && $this->dest_image == $this->source_image) {
+        if ($dynamic_output) {
             $temp = tmpfile();
             $tempfile = array_search('uri', @array_flip(stream_get_meta_data($temp)));
             $this->full_dst_path = $tempfile;
@@ -118,34 +125,24 @@ class MY_Image_lib extends CI_Image_lib {
         if (!$this->resize())
             return FALSE;
         
-        // is cropping needed?
-        if ($this->user_width != 0 && $this->user_height != 0) {
-            // cropping options
-            $this->orig_width = $this->width;
-            $this->orig_height = $this->height;
-            $this->x_axis = floor(($this->width - $this->user_width) / 2);
-            $this->y_axis = floor(($this->height - $this->user_height) / 2);
-            $this->width = $this->user_width;
-            $this->height = $this->user_height;
-            
-            // use the previous generated image for output
-            $this->full_src_path = $this->full_dst_path;
-            
-            // cropping stage
-            if (!$this->crop())
-                return FALSE;
-        }
+        // cropping options
+        $this->orig_width = $this->width;
+        $this->orig_height = $this->height;
+        $this->x_axis = floor(($this->width - $this->user_width) / 2);
+        $this->y_axis = floor(($this->height - $this->user_height) / 2);
+        $this->width = $this->user_width;
+        $this->height = $this->user_height;
         
-        // dynamic output
-        if ($dynamic_output) {
-            header("Content-Disposition: filename={$this->dest_image};");
-            header("Content-Type: {$this->mime_type}");
-            header('Content-Transfer-Encoding: binary');
-            header('Last-Modified: ' . gmdate('D, d M Y H:i:s', time()) . ' GMT');
-            
-            readfile($this->full_dst_path);
-        }
+        // use the previous generated image for output
+        $this->full_src_path = $this->full_dst_path;
         
+        // reset dynamic output to initial value
+        $this->dynamic_output = $dynamic_output;
+        
+        // cropping stage
+        if (!$this->crop())
+            return FALSE;
+
         // close (and remove) the temporary file
         if ($tempfile) {
             fclose($temp);
