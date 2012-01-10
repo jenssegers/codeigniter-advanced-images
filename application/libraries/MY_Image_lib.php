@@ -1,9 +1,9 @@
 <?php
 /**
- * @name        CodeIgniter Advanced Images
- * @author        Jens Segers
- * @link        http://www.jenssegers.be
- * @license        MIT License Copyright (c) 2011 Jens Segers
+ * @name		CodeIgniter Advanced Images
+ * @author		Jens Segers
+ * @link		http://www.jenssegers.be
+ * @license		MIT License Copyright (c) 2011 Jens Segers
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -35,9 +35,9 @@ class MY_Image_lib extends CI_Image_lib {
     /**
      * Initialize image preferences
      *
-     * @access    public
-     * @param     array
-     * @return    bool
+     * @access	public
+     * @param	array
+     * @return	bool
      */
     function initialize($props = array()) {
         // save user specified dimensions before they are modified by the CI library
@@ -56,8 +56,8 @@ class MY_Image_lib extends CI_Image_lib {
      *
      * Resets values in case this class is used in a loop
      *
-     * @access    public
-     * @return    void
+     * @access	public
+     * @return	void
      */
     function clear() {
         $this->user_width = 0;
@@ -69,8 +69,8 @@ class MY_Image_lib extends CI_Image_lib {
     /**
      * Smart resize and crop function
      *
-     * @access    public
-     * @return    bool
+     * @access	public
+     * @return	bool
      */
     function fit() {
         // overwrite the dimensions with the original user specified dimensions
