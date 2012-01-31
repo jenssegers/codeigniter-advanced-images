@@ -31,6 +31,8 @@ class MY_Image_lib extends CI_Image_lib {
     
     var $user_width = 0;
     var $user_height = 0;
+    var $user_x_axis = '';
+    var $user_y_axis = '';
     
     /**
      * Initialize image preferences
@@ -40,12 +42,18 @@ class MY_Image_lib extends CI_Image_lib {
      * @return	bool
      */
     function initialize($props = array()) {
-        // save user specified dimensions before they are modified by the CI library
+        // save user specified dimensions and axis positions before they are modified by the CI library
         if (isset($props["width"])) {
             $this->user_width = $props["width"];
         }
         if (isset($props["height"])) {
             $this->user_height = $props["height"];
+        }
+        if (isset($props["x_axis"])) {
+            $this->user_x_axis = $props["x_axis"];
+        }
+        if (isset($props["y_axis"])) {
+            $this->user_y_axis = $props["y_axis"];
         }
         
         return parent::initialize($props);
@@ -62,6 +70,8 @@ class MY_Image_lib extends CI_Image_lib {
     function clear() {
         $this->user_width = 0;
         $this->user_height = 0;
+        $this->user_x_axis = '';
+        $this->user_y_axis = '';
         
         return parent::clear();
     }
@@ -77,7 +87,7 @@ class MY_Image_lib extends CI_Image_lib {
         $this->width = $this->user_width;
         $this->height = $this->user_height;
         
-        // we will calculat the sizes ourselves
+        // we will calculate the sizes ourselves
         $this->maintain_ratio = FALSE;
         
         // ------------------------------------------------------------------------------------------
@@ -126,11 +136,22 @@ class MY_Image_lib extends CI_Image_lib {
             return FALSE;
         }
         
+        // axis settings
+        if (!is_numeric($this->user_x_axis)) {
+            $this->x_axis = floor(($this->width - $this->user_width) / 2);
+        } else {
+            $this->x_axis = $this->user_x_axis;
+        }
+        
+        if (!is_numeric($this->user_y_axis)) {
+            $this->y_axis = floor(($this->height - $this->user_height) / 2);
+        } else {
+            $this->y_axis = $this->user_y_axis;
+        }
+        
         // cropping options
         $this->orig_width = $this->width;
         $this->orig_height = $this->height;
-        $this->x_axis = floor(($this->width - $this->user_width) / 2);
-        $this->y_axis = floor(($this->height - $this->user_height) / 2);
         $this->width = $this->user_width;
         $this->height = $this->user_height;
         
