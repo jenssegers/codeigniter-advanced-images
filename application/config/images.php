@@ -11,7 +11,7 @@
 | equal to 0, it will automatically calculate a matching width or height 
 | to maintain the original ratio.
 |
-| Uf both dimensions are specified it will automatically crop the 
+| If both dimensions are specified it will automatically crop the 
 | resulting image so that it fits those dimensions.
 |
 */

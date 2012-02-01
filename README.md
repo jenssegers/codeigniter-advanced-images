@@ -30,7 +30,7 @@ In your config/images.php file you need to specify what preset sizes you will be
 	| equal to 0, it will automatically calculate a matching width or height 
 	| to maintain the original ratio.
 	|
-	| Uf both dimensions are specified it will automatically crop the 
+	| If both dimensions are specified it will automatically crop the 
 	| resulting image so that it fits those dimensions.
 	|
 	*/
@@ -46,11 +46,11 @@ In your config/images.php file you need to specify what preset sizes you will be
 	
 	
 Each preset has a width and a height. If one of the dimensions are equal to 0, it will automatically calculate a matching width or height to maintain the original ratio. if you specify both dimensions it will automatically crop the resulting image so that it fits those dimensions.
-	
+
 Library
 -------
 
-The resize and crop logic is grouped in a library that extends CodeIgniter's 'image_lib' and adds a 'fit' function. You can use this library to resize and crop an image to fit the specified dimensions like this:
+The resize and crop logic is grouped in a library that extends CodeIgniter's 'image_lib' and adds a **'fit'** function. You can use this library to resize and crop an image to fit the specified dimensions like this:
 
 	$config["source_image"] = '/path/to/image/mypic.jpg';
 	$config['new_image'] = '/path/to/new/image/newpic.jpg';
@@ -61,7 +61,22 @@ The resize and crop logic is grouped in a library that extends CodeIgniter's 'im
 	$this->image_lib->fit();
 
 The function will return TRUE on sucess or FALSE on failure. Error messages can be read like the normal library with the display_errors() method.
-	
+
+When an image is cropped, the center axis is used by default. If you want to override this behaviour you can specify your own x_axis and y_axis.
+
+Configuration options:
+
+ - **image_library**: Sets the image library to be used.
+ - **library_path**: Sets the server path to your ImageMagick or NetPBM library. If you use either of those libraries you must supply the path.
+ - **source_image**: Sets the source image name/path. The path must be a relative or absolute server path, not a URL.
+ - **dynamic_output**: Determines whether the new image file should be written to disk or generated dynamically. Note: If you choose the dynamic setting, only one image can be shown at a time, and it can't be positioned on the page. It simply outputs the raw image dynamically to your browser, along with image headers.
+ - **quality**: Sets the quality of the image. The higher the quality the larger the file size.
+ - **new_image**: Sets the destination image name/path. You'll use this preference when creating an image copy. The path must be a relative or absolute server path, not a URL.
+ - **width**: Sets the width you would like the image set to.
+ - **height**: Sets the height you would like the image set to.
+ - **x_axis**: Sets the X coordinate in pixels (after resizing) for image cropping. For example, a setting of 30 will crop an image 30 pixels from the left.
+ - **y_axis**: Sets the Y coordinate in pixels (after resizing) for image cropping. For example, a setting of 30 will crop an image 30 pixels from the top.
+
 Usage
 -----
 
