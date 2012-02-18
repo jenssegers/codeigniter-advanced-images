@@ -1,4 +1,4 @@
-Codeigniter Advanced Images
+CodeIgniter Advanced Images
 ===========================
 
 An advanced image resize/cropping controller that will resize your images on the fly from preset dimensions.
