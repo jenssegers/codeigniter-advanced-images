@@ -76,7 +76,9 @@ class Media extends CI_Controller {
             $config["height"] = $height;
             $config["dynamic_output"] = FALSE; // always save as cache
             
-            $this->load->library('image_lib', $config);
+            $this->load->library('image_lib');
+			$this->image_lib->initialize($config);
+			
             $this->image_lib->fit();
         }
         
