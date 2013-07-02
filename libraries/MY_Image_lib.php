@@ -130,6 +130,14 @@ class MY_Image_lib extends CI_Image_lib {
             $tempfile = array_search('uri', @array_flip(stream_get_meta_data($temp)));
             $this->full_dst_path = $tempfile;
         }
+	
+	// if the user is trying to put images in a directory, check if it esists and create if not.
+	if (!is_dir($this->dest_folder)) {
+		// we don't have the destination folder, lets try to create it...
+		if (!mkdir($this->dest_folder)) {
+			return FALSE;
+		}
+	}
         
         // resize stage
         if (!$this->resize()) {
