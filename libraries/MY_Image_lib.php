@@ -90,6 +90,14 @@ class MY_Image_lib extends CI_Image_lib {
         // we will calculate the sizes ourselves
         $this->maintain_ratio = FALSE;
         
+	// if the user is trying to put images in a directory, check if it esists and create if not.
+	if (!is_dir($this->dest_folder)) {
+		// we don't have the destination folder, lets try to create it...
+		if (!mkdir($this->dest_folder)) {
+			return FALSE;
+		}
+	}
+        
         // ------------------------------------------------------------------------------------------
         // mode 1: auto-scale the image to fit 1 dimension
         // ------------------------------------------------------------------------------------------
@@ -131,14 +139,6 @@ class MY_Image_lib extends CI_Image_lib {
             $this->full_dst_path = $tempfile;
         }
 	
-	// if the user is trying to put images in a directory, check if it esists and create if not.
-	if (!is_dir($this->dest_folder)) {
-		// we don't have the destination folder, lets try to create it...
-		if (!mkdir($this->dest_folder)) {
-			return FALSE;
-		}
-	}
-        
         // resize stage
         if (!$this->resize()) {
             return FALSE;
