@@ -114,6 +114,16 @@ class MY_Image_lib extends CI_Image_lib {
         if (($this->user_width != $this->width) && ($this->user_height != $this->height)) {
             if ($this->master_dim == 'height') {
                 $this->width = $this->user_width;
+
+            } else if($this->master_dim == "auto") {
+                // EDIT BY FATHUR
+                // Calculate if the master_dim is auto
+                if($this->orig_width > $this->orig_height) {
+                    $this->height = $this->user_height;
+                } else {
+                    $this->width = $this->user_width;
+                }
+                // END EDIT BY FATHUR
             } else {
                 $this->height = $this->user_height;
             }
